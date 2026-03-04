@@ -3,7 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <title>Para Ti</title>
+<audio id="bgMusic"></audio>
+<script>
 
+const playlist = [
+    "La Separación [Angie Vázquez] (letra  lyrics).mp3",
+    "Morat - Mi Suerte (Letra).mp3",
+    "Ela Taubert - Cómo Pasó_ (Official Video).mp3",
+    "Lasso, Cami - Un Millón Como Tú.mp3"
+];
+
+let currentTrack = 0;
+const audioPlayer = document.getElementById("bgMusic");
+
+// Configuración elegante
+audioPlayer.volume = 0.4; // volumen suave
+
+function playTrack(index) {
+    audioPlayer.src = playlist[index];
+    audioPlayer.play().catch(() => {
+        console.log("Autoplay bloqueado hasta interacción del usuario");
+    });
+}
+
+audioPlayer.addEventListener("ended", function() {
+    currentTrack = (currentTrack + 1) % playlist.length;
+    playTrack(currentTrack);
+});
+
+</script>
 <style>
     body {
         margin: 0;
