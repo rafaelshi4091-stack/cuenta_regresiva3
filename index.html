@@ -55,6 +55,47 @@ height:1px;
 background:#ddd;
 }
 
+/* reproductor */
+
+.music-player{
+margin-top:40px;
+padding:20px;
+border-top:1px solid #ddd;
+}
+
+.song-title{
+font-size:16px;
+margin-bottom:10px;
+}
+
+.controls button{
+padding:8px 18px;
+margin:5px;
+border:1px solid #222;
+background:transparent;
+cursor:pointer;
+}
+
+.controls button:hover{
+background:#222;
+color:white;
+}
+
+.progress{
+width:100%;
+height:6px;
+background:#eee;
+margin-top:15px;
+border-radius:4px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:#222;
+}
+
 </style>
 </head>
 
@@ -70,6 +111,25 @@ background:#ddd;
 
 <div id="video2Section" class="video-section"></div>
 
+<!-- reproductor -->
+
+<div class="music-player">
+
+<div id="songTitle" class="song-title">
+Cargando música...
+</div>
+
+<div class="controls">
+<button onclick="togglePlay()">Play / Pause</button>
+<button onclick="nextTrack()">Siguiente</button>
+</div>
+
+<div class="progress">
+<div id="progressBar" class="progress-bar"></div>
+</div>
+
+</div>
+
 </div>
 
 <audio id="bgMusic"></audio>
@@ -80,56 +140,90 @@ background:#ddd;
 CONFIGURACIÓN
 ----------------------------- */
 
-// Fecha video 1
 const firstDate = new Date("2026-03-29T08:00:00-04:00").getTime();
 
-// Fecha video 2
 const secondDate = new Date("2026-04-29T08:00:00-04:00").getTime();
 
-// Playlist de audio
+/* playlist */
+
 const playlist = [
-"Lasso_ Cami - Un Millón Como Tú(MP3_70K).mp3"
+
+{
+title:"Un Millón Como Tú - Lasso & Cami",
+file:"Lasso_ Cami - Un Millón Como Tú(MP3_70K).mp3"
+}
+
 ];
 
-/* -----------------------------
-ELEMENTOS
------------------------------ */
+/* elementos */
 
-const mainCountdown = document.getElementById("mainCountdown");
-const video1Section = document.getElementById("video1Section");
-const video2Section = document.getElementById("video2Section");
-const audioPlayer = document.getElementById("bgMusic");
+const mainCountdown=document.getElementById("mainCountdown");
+const video1Section=document.getElementById("video1Section");
+const video2Section=document.getElementById("video2Section");
 
-/* -----------------------------
-MÚSICA
------------------------------ */
+const audioPlayer=document.getElementById("bgMusic");
 
-let currentTrack = 0;
+const songTitle=document.getElementById("songTitle");
+const progressBar=document.getElementById("progressBar");
 
-audioPlayer.volume = 0.4;
+/* música */
 
-function playTrack(index){
+let currentTrack=0;
 
-audioPlayer.src = playlist[index];
+audioPlayer.volume=0.4;
+
+function loadTrack(index){
+
+audioPlayer.src=playlist[index].file;
+
+songTitle.innerText=playlist[index].title;
 
 audioPlayer.play().catch(()=>{
-console.log("Autoplay bloqueado por el navegador");
+console.log("Autoplay bloqueado por navegador");
 });
 
 }
 
-audioPlayer.addEventListener("ended",function(){
+function togglePlay(){
+
+if(audioPlayer.paused){
+
+audioPlayer.play();
+
+}else{
+
+audioPlayer.pause();
+
+}
+
+}
+
+function nextTrack(){
 
 currentTrack=(currentTrack+1)%playlist.length;
-playTrack(currentTrack);
+
+loadTrack(currentTrack);
+
+}
+
+audioPlayer.addEventListener("timeupdate",function(){
+
+const percent=(audioPlayer.currentTime/audioPlayer.duration)*100;
+
+progressBar.style.width=percent+"%";
 
 });
 
-// iniciar música
-playTrack(currentTrack);
+audioPlayer.addEventListener("ended",function(){
+
+nextTrack();
+
+});
+
+loadTrack(currentTrack);
 
 /* -----------------------------
-CONTADOR Y VIDEOS
+CONTADOR
 ----------------------------- */
 
 let video1Shown=false;
@@ -205,9 +299,7 @@ clearInterval(timer);
 
 },1000);
 
-/* -----------------------------
-FUNCIONES
------------------------------ */
+/* funciones */
 
 function updateCountdown(distance,text){
 
