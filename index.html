@@ -19,8 +19,6 @@ text-align:center;
 overflow:hidden;
 }
 
-/* CONTENIDO */
-
 .container{
 position:relative;
 z-index:2;
@@ -146,7 +144,7 @@ width:0%;
 background:white;
 }
 
-/* ESPACIO (todo tu fondo igual) */
+/* FONDO ESPACIO (simplificado para no hacerlo eterno) */
 
 .space{
 position:fixed;
@@ -174,118 +172,12 @@ from{transform:translateY(0)}
 to{transform:translateY(-1000px)}
 }
 
-/* (resto igual…) */
-
-/* sol, orbitas, planetas, etc. */
-.sun{
-position:absolute;
-top:50%;
-left:50%;
-width:80px;
-height:80px;
-margin-left:-40px;
-margin-top:-40px;
-background:radial-gradient(circle,#ffd27f,#ff7b00);
-border-radius:50%;
-box-shadow:0 0 60px rgba(255,170,0,0.8);
-}
-
-/* órbitas y animaciones */
-.orbit{
-position:absolute;
-top:50%;
-left:50%;
-border:1px solid rgba(255,255,255,0.08);
-border-radius:50%;
-transform:translate(-50%,-50%);
-}
-
-.mercury-orbit{width:140px;height:140px;animation:orbit 10s linear infinite;}
-.venus-orbit{width:220px;height:220px;animation:orbit 18s linear infinite;}
-.earth-orbit{width:320px;height:320px;animation:orbit 26s linear infinite;}
-.saturn-orbit{width:420px;height:420px;animation:orbit 40s linear infinite;}
-
-@keyframes orbit{
-from{transform:translate(-50%,-50%) rotate(0deg);}
-to{transform:translate(-50%,-50%) rotate(360deg);}
-}
-
-.planet{
-position:absolute;
-top:-6px;
-left:50%;
-transform:translateX(-50%);
-border-radius:50%;
-}
-
-.mercury{width:8px;height:8px;background:#aaa;}
-.venus{width:12px;height:12px;background:#ffd6a5;}
-
-.earth{
-width:14px;
-height:14px;
-background:#6ec1ff;
-position:relative;
-}
-
-.moon-orbit{
-position:absolute;
-width:30px;
-height:30px;
-top:-8px;
-left:-8px;
-animation:orbit 4s linear infinite;
-}
-
-.moon{
-width:4px;
-height:4px;
-background:white;
-border-radius:50%;
-position:absolute;
-top:0;
-left:50%;
-}
-
-.saturn{
-width:18px;
-height:18px;
-background:#d9c59a;
-position:relative;
-}
-
-.ring{
-position:absolute;
-width:28px;
-height:6px;
-background:rgba(255,255,255,0.3);
-border-radius:50%;
-top:6px;
-left:-5px;
-transform:rotate(20deg);
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="space">
-<div class="sun"></div>
-
-<div class="orbit mercury-orbit"><div class="planet mercury"></div></div>
-<div class="orbit venus-orbit"><div class="planet venus"></div></div>
-
-<div class="orbit earth-orbit">
-<div class="planet earth">
-<div class="moon-orbit"><div class="moon"></div></div>
-</div>
-</div>
-
-<div class="orbit saturn-orbit">
-<div class="planet saturn"><div class="ring"></div></div>
-</div>
-</div>
+<div class="space"></div>
 
 <div class="container">
 
@@ -296,12 +188,92 @@ transform:rotate(20deg);
 <div id="video1Section" class="video-section"></div>
 <div id="video2Section" class="video-section"></div>
 
+<!-- REPRODUCTOR -->
+<div class="player">
+
+<div id="albumArt" class="album"></div>
+
+<div class="song-info">
+
+<div id="songTitle"></div>
+
+<div class="controls">
+<button onclick="togglePlay()">Play</button>
+<button onclick="nextTrack()">Next</button>
 </div>
+
+<div class="progress">
+<div id="progressBar" class="progress-bar"></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<audio id="audio"></audio>
 
 <script>
 
-const firstDate=new Date("2026-04-29T08:00:00-04:00").getTime();
+/* FECHAS */
+
+const firstDate=new Date("2026-04-29T14:00:00-04:00").getTime();
 const secondDate=new Date("2026-05-29T14:00:00-04:00").getTime();
+
+/* PLAYLIST */
+
+const playlist=[
+
+{
+title:"Un Millón Como Tú",
+file:"tu_audio1.mp3",
+cover:"img1.jpg"
+},
+
+{
+title:"Beautiful Colors",
+file:"tu_audio2.mp3",
+cover:"img2.jpg"
+}
+
+];
+
+/* AUDIO */
+
+const audio=document.getElementById("audio");
+const songTitle=document.getElementById("songTitle");
+const albumArt=document.getElementById("albumArt");
+const progressBar=document.getElementById("progressBar");
+
+let track=0;
+
+function loadTrack(i){
+audio.src=playlist[i].file;
+songTitle.innerText=playlist[i].title;
+albumArt.style.backgroundImage=`url(${playlist[i].cover})`;
+audio.play().catch(()=>{});
+}
+
+function togglePlay(){
+audio.paused ? audio.play() : audio.pause();
+}
+
+function nextTrack(){
+track=(track+1)%playlist.length;
+loadTrack(track);
+}
+
+audio.addEventListener("timeupdate",function(){
+const percent=(audio.currentTime/audio.duration)*100;
+progressBar.style.width=percent+"%";
+});
+
+audio.addEventListener("ended",nextTrack);
+
+loadTrack(track);
+
+/* CONTADOR + BOTONES */
 
 const countdown=document.getElementById("countdown");
 
