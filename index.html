@@ -69,9 +69,26 @@ opacity:1;
 transform:translateY(0);
 }
 
-iframe{
+/* BOTÓN VIDEO */
+
+.video-btn{
+display:inline-block;
 margin-top:20px;
-border-radius:10px;
+padding:14px 28px;
+font-size:16px;
+border-radius:30px;
+background:linear-gradient(135deg,#ff7b00,#ffb347);
+color:white;
+text-decoration:none;
+font-weight:600;
+letter-spacing:1px;
+transition:all 0.3s ease;
+box-shadow:0 0 15px rgba(255,140,0,0.6);
+}
+
+.video-btn:hover{
+transform:scale(1.08);
+box-shadow:0 0 25px rgba(255,140,0,0.9);
 }
 
 /* REPRODUCTOR */
@@ -129,7 +146,7 @@ width:0%;
 background:white;
 }
 
-/* ESPACIO */
+/* ESPACIO (todo tu fondo igual) */
 
 .space{
 position:fixed;
@@ -140,8 +157,6 @@ height:100%;
 z-index:0;
 pointer-events:none;
 }
-
-/* estrellas */
 
 .space::before{
 content:"";
@@ -159,8 +174,9 @@ from{transform:translateY(0)}
 to{transform:translateY(-1000px)}
 }
 
-/* sol */
+/* (resto igual…) */
 
+/* sol, orbitas, planetas, etc. */
 .sun{
 position:absolute;
 top:50%;
@@ -174,8 +190,7 @@ border-radius:50%;
 box-shadow:0 0 60px rgba(255,170,0,0.8);
 }
 
-/* orbitas */
-
+/* órbitas y animaciones */
 .orbit{
 position:absolute;
 top:50%;
@@ -213,8 +228,6 @@ background:#6ec1ff;
 position:relative;
 }
 
-/* luna */
-
 .moon-orbit{
 position:absolute;
 width:30px;
@@ -234,8 +247,6 @@ top:0;
 left:50%;
 }
 
-/* saturno */
-
 .saturn{
 width:18px;
 height:18px;
@@ -254,66 +265,26 @@ left:-5px;
 transform:rotate(20deg);
 }
 
-/* estrellas fugaces */
-
-.shooting-star{
-position:absolute;
-top:20%;
-left:-200px;
-width:3px;
-height:3px;
-background:white;
-box-shadow:0 0 6px white;
-animation:shoot 8s linear infinite;
-}
-
-.star2{
-top:60%;
-animation-delay:4s;
-}
-
-@keyframes shoot{
-
-0%{transform:translateX(0) translateY(0);opacity:1;}
-
-100%{transform:translateX(120vw) translateY(40vh);opacity:0;}
-
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="space">
-
 <div class="sun"></div>
 
-<div class="orbit mercury-orbit">
-<div class="planet mercury"></div>
-</div>
-
-<div class="orbit venus-orbit">
-<div class="planet venus"></div>
-</div>
+<div class="orbit mercury-orbit"><div class="planet mercury"></div></div>
+<div class="orbit venus-orbit"><div class="planet venus"></div></div>
 
 <div class="orbit earth-orbit">
 <div class="planet earth">
-<div class="moon-orbit">
-<div class="moon"></div>
-</div>
+<div class="moon-orbit"><div class="moon"></div></div>
 </div>
 </div>
 
 <div class="orbit saturn-orbit">
-<div class="planet saturn">
-<div class="ring"></div>
+<div class="planet saturn"><div class="ring"></div></div>
 </div>
-</div>
-
-<div class="shooting-star"></div>
-<div class="shooting-star star2"></div>
-
 </div>
 
 <div class="container">
@@ -325,114 +296,12 @@ animation-delay:4s;
 <div id="video1Section" class="video-section"></div>
 <div id="video2Section" class="video-section"></div>
 
-<div class="player">
-
-<div id="albumArt" class="album"></div>
-
-<div class="song-info">
-
-<div id="songTitle"></div>
-
-<div class="controls">
-<button onclick="togglePlay()">Play</button>
-<button onclick="nextTrack()">Next</button>
 </div>
-
-<div class="progress">
-<div id="progressBar" class="progress-bar"></div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<audio id="audio"></audio>
 
 <script>
 
-/* FECHAS */
-
-const firstDate=new Date("2026-03-24T15:15:00-04:00").getTime();
-const secondDate=new Date("2026-04-29T08:00:00-04:00").getTime();
-
-/* PLAYLIST */
-
-const playlist=[
-
-{
-title:"Un Millón Como Tú - Lasso & Cami",
-file:"Lasso_ Cami - Un Millón Como Tú(MP3_70K).mp3",
-cover:"dos.jfif"
-},
-
-{
-title:"OneRepublic - Beautiful Colors",
-file:"OneRepublic - Beautiful Colors - from Kaiju No. 8 [Official Music Video](MP3_160K).mp3",
-cover:"uno.jfif"
-},
-
-{
-title:"La Separación [Angie Vázquez]",
-file:"La Separación [Angie Vázquez] (letra _ lyrics)(MP3_70K).mp3",
-cover:"unnamed.jpg"
-},
-
-{
-title:"Ela Taubert - ¿Cómo Pasó?",
-file:"Ela Taubert - ¿Cómo Pasó_ (Official Video)(MP3_70K).mp3",
-cover:"descarga.jfif"
-}
-
-];
-
-/* AUDIO */
-
-const audio=document.getElementById("audio");
-const songTitle=document.getElementById("songTitle");
-const albumArt=document.getElementById("albumArt");
-const progressBar=document.getElementById("progressBar");
-
-let track=0;
-
-function loadTrack(i){
-
-audio.src=playlist[i].file;
-songTitle.innerText=playlist[i].title;
-albumArt.style.backgroundImage=`url(${playlist[i].cover})`;
-
-audio.play().catch(()=>{});
-
-}
-
-function togglePlay(){
-
-if(audio.paused){audio.play();}
-else{audio.pause();}
-
-}
-
-function nextTrack(){
-
-track=(track+1)%playlist.length;
-
-loadTrack(track);
-
-}
-
-audio.addEventListener("timeupdate",function(){
-
-const percent=(audio.currentTime/audio.duration)*100;
-progressBar.style.width=percent+"%";
-
-});
-
-audio.addEventListener("ended",nextTrack);
-
-loadTrack(track);
-
-/* CONTADOR */
+const firstDate=new Date("2026-04-29T08:00:00-04:00").getTime();
+const secondDate=new Date("2026-05-29T14:00:00-04:00").getTime();
 
 const countdown=document.getElementById("countdown");
 
@@ -448,7 +317,6 @@ let distance;
 if(now<firstDate){
 
 distance=firstDate-now;
-
 renderCountdown(distance);
 
 }
@@ -458,23 +326,18 @@ else if(now>=firstDate && now<secondDate){
 if(!video1Shown){
 
 document.getElementById("video1Section").innerHTML=`
-
 <h2>Primera sorpresa</h2>
-
-<iframe width="560" height="315"
-src="https://youtu.be/q-s3tfNRPiE?si=5loGo08KMkWj893X"
-allowfullscreen></iframe>
-
+<a href="https://youtube.com/shorts/xAtgIKRWfM8?si=kMEDwKJcDHJ3R-YL" target="_blank" class="video-btn">
+Ver sorpresa 💫
+</a>
 `;
 
 document.getElementById("video1Section").classList.add("visible");
-
 video1Shown=true;
 
 }
 
 distance=secondDate-now;
-
 renderCountdown(distance);
 
 }
@@ -483,18 +346,14 @@ else{
 
 if(!video2Shown){
 
-document.getElementById("video1Section").innerHTML=`
-
+document.getElementById("video2Section").innerHTML=`
 <h2>Segunda sorpresa</h2>
-
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/VIDEO2"
-allowfullscreen></iframe>
-
+<a href="https://www.youtube.com/watch?v=VIDEO2" target="_blank" class="video-btn">
+Ver segunda sorpresa ✨
+</a>
 `;
 
 document.getElementById("video2Section").classList.add("visible");
-
 video2Shown=true;
 
 }
@@ -511,12 +370,10 @@ const minutes=Math.floor((d%(1000*60*60))/(1000*60));
 const seconds=Math.floor((d%(1000*60))/1000);
 
 countdown.innerHTML=`
-
 <div class="time-box"><span>${days}</span>Días</div>
 <div class="time-box"><span>${hours}</span>Horas</div>
 <div class="time-box"><span>${minutes}</span>Min</div>
 <div class="time-box"><span>${seconds}</span>Seg</div>
-
 `;
 
 }
